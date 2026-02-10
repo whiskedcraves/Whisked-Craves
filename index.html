@@ -1,1 +1,756 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whisked Craves — Taste That Matters</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --cocoa-deep: #110704; --cocoa: #1e0d06; --choc-dark: #2e1208;
+    --caramel: #b87333; --gold: #c9a84c; --gold-light: #e2c97e;
+    --cream: #f2e8d9; --cream-dim: rgba(242,232,217,0.6); --cream-mute: rgba(242,232,217,0.35);
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cocoa); color: var(--cream); font-family: 'Jost', sans-serif; font-weight: 300; overflow-x: hidden; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 999; mix-blend-mode: overlay;
+  }
+
+  /* ── WORDMARK ── */
+  .wordmark { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
+  .wm-whisked {
+    font-family: 'Playfair Display', serif; font-size: clamp(2.8rem,10vw,6rem);
+    font-weight: 400; font-style: italic; letter-spacing: -0.02em; line-height: 1;
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 40%, var(--caramel) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .wm-craves { font-family: 'Jost', sans-serif; font-size: clamp(1rem,3.5vw,2rem); font-weight: 500; letter-spacing: 0.55em; text-transform: uppercase; color: var(--cream); }
+  .wm-rule { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 0.4rem 0; }
+  .wm-tag { font-size: clamp(0.55rem,1.5vw,0.65rem); letter-spacing: 0.5em; text-transform: uppercase; color: rgba(201,168,76,0.7); }
+
+  /* ── SHARED ── */
+  .eyebrow { font-size: 0.58rem; letter-spacing: 0.5em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; }
+  .sec-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem,5vw,3.2rem); font-weight: 400; line-height: 1.2; color: var(--cream); }
+  .sec-title em { font-style: italic; color: var(--gold-light); }
+  .g-rule { width: 50px; height: 1px; background: linear-gradient(90deg, var(--gold), transparent); margin: 1.8rem 0; }
+  .g-rule.c { margin: 1.8rem auto; background: linear-gradient(90deg, transparent, var(--gold), transparent); width: 80px; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100dvh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; padding: 5rem 2rem 6rem;
+    position: relative;
+    background: radial-gradient(ellipse 70% 55% at 50% 35%, #3d1a08 0%, transparent 70%), radial-gradient(ellipse 40% 40% at 80% 70%, #2a1005 0%, transparent 60%), var(--cocoa-deep);
+  }
+  .h-eye { font-size: 0.6rem; letter-spacing: 0.5em; text-transform: uppercase; color: var(--gold); margin-bottom: 3rem; opacity: 0; animation: rise 0.9s 0.3s forwards; }
+  .h-wm { opacity: 0; animation: rise 1s 0.6s forwards; margin-bottom: 2.5rem; }
+  .h-desc { font-size: clamp(0.65rem,1.8vw,0.75rem); letter-spacing: 0.3em; text-transform: uppercase; color: var(--cream-dim); margin-bottom: 3.5rem; opacity: 0; animation: rise 0.9s 0.9s forwards; }
+  .h-desc span { display: inline-block; margin: 0 0.8rem; color: var(--gold); font-size: 0.4rem; vertical-align: middle; }
+  .h-ctas { display: flex; flex-direction: column; align-items: center; gap: 1rem; opacity: 0; animation: rise 0.9s 1.2s forwards; }
+  .btn-gold { display: inline-block; background: linear-gradient(135deg, var(--caramel), var(--gold)); color: var(--cocoa-deep); padding: 1rem 3.5rem; font-family: 'Jost', sans-serif; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.35em; text-transform: uppercase; text-decoration: none; transition: opacity 0.3s, transform 0.3s; border: none; cursor: pointer; }
+  .btn-gold:hover { opacity: 0.85; transform: translateY(-2px); }
+  .btn-ghost { font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--cream-mute); text-decoration: none; transition: color 0.3s; }
+  .btn-ghost:hover { color: var(--cream); }
+  .scroll-hint { position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.6rem; opacity: 0; animation: rise 1s 1.8s forwards; }
+  .scroll-line { width: 1px; height: 48px; background: linear-gradient(to bottom, var(--gold), transparent); animation: pulse 2.2s 2s infinite; }
+  .scroll-hint span { font-size: 0.5rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--cream-mute); }
+
+  /* ── DROP SECTION ── */
+  .drop-section { padding: 5rem 2rem; background: linear-gradient(180deg, var(--cocoa-deep), var(--choc-dark)); border-top: 1px solid rgba(201,168,76,0.2); border-bottom: 1px solid rgba(201,168,76,0.2); }
+  .drop-inner { max-width: 960px; margin: 0 auto; }
+
+  /* no drop */
+  #no-drop { text-align: center; }
+  #no-drop .nd-inner { max-width: 540px; margin: 0 auto; }
+  .nd-text { font-size: 0.75rem; line-height: 1.9; color: var(--cream-dim); margin-bottom: 2.5rem; }
+  .ig-btn { display: inline-flex; align-items: center; gap: 0.7rem; border: 1px solid var(--gold); color: var(--cream); padding: 0.9rem 2.5rem; font-family: 'Jost', sans-serif; font-size: 0.65rem; font-weight: 400; letter-spacing: 0.3em; text-transform: uppercase; text-decoration: none; transition: background 0.3s, color 0.3s; }
+  .ig-btn:hover { background: var(--gold); color: var(--cocoa-deep); }
+  .ig-btn svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+
+  /* active drop */
+  #active-drop { display: none; }
+  .drop-head { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(201,168,76,0.15); display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; }
+  .drop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+  .drop-card { border: 1px solid rgba(201,168,76,0.2); padding: 2rem 1.8rem; position: relative; transition: border-color 0.3s, background 0.3s; }
+  .drop-card:hover { border-color: rgba(201,168,76,0.5); background: rgba(201,168,76,0.04); }
+  .drop-card.claimed { opacity: 0.4; pointer-events: none; }
+  .drop-card.claimed::after { content: 'CLAIMED'; position: absolute; top: 1rem; right: 1rem; font-size: 0.5rem; letter-spacing: 0.3em; color: var(--caramel); border: 1px solid var(--caramel); padding: 0.2rem 0.5rem; }
+  .dc-size { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 400; color: var(--gold); line-height: 1; margin-bottom: 0.3rem; }
+  .dc-label { font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--cream-dim); margin-bottom: 0.4rem; }
+  .dc-product { font-family: 'Playfair Display', serif; font-size: 1rem; font-style: italic; color: var(--cream); margin-bottom: 0.6rem; }
+  .dc-allergens { font-size: 0.6rem; color: var(--caramel); margin-bottom: 1.4rem; letter-spacing: 0.05em; }
+  .claim-btn { display: inline-block; border: 1px solid var(--gold); color: var(--gold); padding: 0.6rem 1.5rem; font-family: 'Jost', sans-serif; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; background: none; cursor: pointer; transition: background 0.3s, color 0.3s; }
+  .claim-btn:hover { background: var(--gold); color: var(--cocoa-deep); }
+
+  /* ── HOW IT WORKS ── */
+  .how-section { padding: 7rem 2rem; max-width: 860px; margin: 0 auto; }
+  .how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 3rem; margin-top: 3.5rem; }
+  .how-item { display: flex; flex-direction: column; gap: 0.8rem; }
+  .how-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 400; color: rgba(201,168,76,0.18); line-height: 1; }
+  .how-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--cream); }
+  .how-desc { font-size: 0.72rem; line-height: 1.9; color: var(--cream-mute); }
+
+  /* ── DEPOSIT ── */
+  .deposit-section { padding: 5rem 2rem; background: var(--choc-dark); border-top: 1px solid rgba(201,168,76,0.15); border-bottom: 1px solid rgba(201,168,76,0.15); }
+  .dep-inner { max-width: 800px; margin: 0 auto; }
+  .dep-body { font-size: 0.75rem; line-height: 1.9; color: var(--cream-dim); margin-bottom: 2.5rem; }
+  .dep-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+  .dep-card { padding: 1.8rem 1.5rem; border: 1px solid rgba(201,168,76,0.2); }
+  .dep-card-title { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--gold); margin-bottom: 0.6rem; }
+  .dep-card-text { font-size: 0.7rem; line-height: 1.8; color: var(--cream-mute); }
+  .dep-notice { padding: 1.5rem; border-left: 2px solid var(--gold); background: rgba(201,168,76,0.05); font-size: 0.72rem; line-height: 1.9; color: var(--cream-dim); }
+  .dep-notice strong { color: var(--gold); font-weight: 400; }
+
+  /* ── ALLERGENS ── */
+  .allergy-section { padding: 6rem 2rem; max-width: 960px; margin: 0 auto; }
+  .allergy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+  .allergy-card { border: 1px solid rgba(201,168,76,0.2); padding: 1.8rem; }
+  .ac-name { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--cream); margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(201,168,76,0.15); }
+  .ac-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.8rem; }
+  .ac-pill { padding: 0.25rem 0.7rem; border: 1px solid rgba(201,168,76,0.35); font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cream-dim); }
+  .ac-pill.trace { border-color: rgba(184,115,51,0.4); color: var(--caramel); }
+  .allergy-warning { margin-top: 3rem; padding: 1.5rem; border-left: 2px solid var(--caramel); background: rgba(184,115,51,0.07); font-size: 0.72rem; line-height: 1.9; color: var(--cream-dim); }
+  .allergy-warning strong { color: var(--caramel); font-weight: 400; }
+
+  /* ── PRE-ORDER ── */
+  .preorder-section { padding: 7rem 2rem; background: var(--choc-dark); border-top: 1px solid rgba(201,168,76,0.15); text-align: center; }
+  .po-inner { max-width: 800px; margin: 0 auto; }
+  .po-terms { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-top: 3rem; }
+  .po-block { display: flex; flex-direction: column; gap: 0.5rem; }
+  .po-num { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 400; color: rgba(201,168,76,0.2); line-height: 1; }
+  .po-title { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--cream); }
+  .po-desc { font-size: 0.7rem; line-height: 1.8; color: var(--cream-mute); }
+  .po-cta { display: inline-block; margin-top: 3rem; border: 1px solid var(--caramel); color: var(--cream); padding: 0.9rem 2.8rem; font-family: 'Jost', sans-serif; font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase; text-decoration: none; transition: background 0.3s, color 0.3s; }
+  .po-cta:hover { background: var(--caramel); color: var(--cocoa-deep); }
+
+  /* ── FOOTER ── */
+  footer { padding: 3.5rem 2rem; text-align: center; border-top: 1px solid rgba(201,168,76,0.15); background: var(--cocoa-deep); }
+  .ft-tag { font-size: 0.55rem; letter-spacing: 0.45em; text-transform: uppercase; color: rgba(201,168,76,0.5); margin-top: 0.3rem; }
+  .ft-legal { margin-top: 2rem; font-size: 0.58rem; color: var(--cream-mute); line-height: 1.7; }
+
+  /* ── MODAL ── */
+  .modal-bg { position: fixed; inset: 0; background: rgba(17,7,4,0.93); backdrop-filter: blur(6px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1.5rem; opacity: 0; pointer-events: none; transition: opacity 0.35s; }
+  .modal-bg.open { opacity: 1; pointer-events: all; }
+  .modal-box { background: var(--choc-dark); border: 1px solid rgba(201,168,76,0.3); max-width: 500px; width: 100%; padding: 2.5rem 2rem; position: relative; transform: translateY(20px); transition: transform 0.35s; max-height: 90dvh; overflow-y: auto; }
+  .modal-bg.open .modal-box { transform: translateY(0); }
+  .modal-x { position: absolute; top: 1rem; right: 1.2rem; background: none; border: none; color: var(--cream-mute); font-size: 1.4rem; cursor: pointer; }
+  .modal-x:hover { color: var(--cream); }
+  .m-eye { font-size: 0.58rem; letter-spacing: 0.45em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
+  .m-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--cream); margin-bottom: 0.3rem; }
+  .m-prod { font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.95rem; color: var(--gold-light); margin-bottom: 1.2rem; }
+  .m-rule { height: 1px; background: rgba(201,168,76,0.2); margin-bottom: 1.2rem; }
+  .m-steps { display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 1.5rem; }
+  .m-step { display: flex; gap: 1rem; align-items: flex-start; }
+  .m-sn { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: rgba(201,168,76,0.3); line-height: 1; flex-shrink: 0; width: 1.4rem; }
+  .m-st { font-size: 0.7rem; line-height: 1.8; color: var(--cream-dim); }
+  .m-st strong { color: var(--cream); font-weight: 400; }
+  .m-st em { color: var(--gold); font-style: normal; }
+  .m-dep { padding: 1rem 1.2rem; border-left: 2px solid var(--gold); background: rgba(201,168,76,0.06); margin-bottom: 1.5rem; font-size: 0.68rem; line-height: 1.8; color: var(--cream-dim); }
+  .m-dep strong { color: var(--gold); font-weight: 400; }
+  .m-cta { display: block; width: 100%; background: linear-gradient(135deg, var(--caramel), var(--gold)); color: var(--cocoa-deep); padding: 1rem; font-family: 'Jost', sans-serif; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; text-decoration: none; text-align: center; border: none; cursor: pointer; transition: opacity 0.3s; }
+  .m-cta:hover { opacity: 0.85; }
+  .m-note { margin-top: 0.8rem; font-size: 0.58rem; text-align: center; color: var(--cream-mute); line-height: 1.7; }
+
+  /* ── ADMIN PANEL ── */
+  #admin-login { display: none; position: fixed; inset: 0; background: rgba(17,7,4,0.97); z-index: 500; align-items: center; justify-content: center; padding: 2rem; }
+  #admin-login.show { display: flex; }
+  .login-box { background: var(--choc-dark); border: 1px solid rgba(201,168,76,0.3); max-width: 360px; width: 100%; padding: 3rem 2rem; text-align: center; }
+  .login-box h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--cream); margin-bottom: 0.4rem; }
+  .login-box p { font-size: 0.68rem; color: var(--cream-mute); margin-bottom: 2rem; }
+  .login-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(201,168,76,0.3); color: var(--cream); padding: 0.8rem 1rem; font-family: 'Jost', sans-serif; font-size: 0.8rem; margin-bottom: 1rem; outline: none; }
+  .login-input:focus { border-color: var(--gold); }
+  .login-err { font-size: 0.65rem; color: #e05c5c; margin-bottom: 0.8rem; min-height: 1rem; }
+
+  #admin-panel { display: none; position: fixed; inset: 0; background: var(--cocoa-deep); z-index: 500; overflow-y: auto; }
+  #admin-panel.show { display: block; }
+  .ap-header { background: var(--choc-dark); padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(201,168,76,0.2); position: sticky; top: 0; z-index: 10; }
+  .ap-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--cream); }
+  .ap-close { background: none; border: 1px solid rgba(201,168,76,0.3); color: var(--cream-mute); padding: 0.4rem 1rem; font-family: 'Jost', sans-serif; font-size: 0.6rem; letter-spacing: 0.2em; cursor: pointer; transition: all 0.2s; }
+  .ap-close:hover { border-color: var(--gold); color: var(--cream); }
+  .ap-body { max-width: 700px; margin: 0 auto; padding: 3rem 2rem; }
+  .ap-section { margin-bottom: 3rem; }
+  .ap-section-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--gold); margin-bottom: 1.5rem; padding-bottom: 0.7rem; border-bottom: 1px solid rgba(201,168,76,0.2); }
+  .ap-row { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.2rem; }
+  .ap-label { font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cream-dim); }
+  .ap-input, .ap-select { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(201,168,76,0.25); color: var(--cream); padding: 0.75rem 1rem; font-family: 'Jost', sans-serif; font-size: 0.8rem; outline: none; appearance: none; }
+  .ap-input:focus, .ap-select:focus { border-color: var(--gold); }
+  .ap-select option { background: var(--choc-dark); color: var(--cream); }
+  .ap-toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.2rem; border: 1px solid rgba(201,168,76,0.2); margin-bottom: 1rem; }
+  .ap-toggle-label { font-size: 0.72rem; color: var(--cream-dim); }
+  .toggle { position: relative; width: 44px; height: 24px; cursor: pointer; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-track { position: absolute; inset: 0; background: rgba(255,255,255,0.1); border-radius: 12px; transition: background 0.3s; }
+  .toggle input:checked + .toggle-track { background: var(--gold); }
+  .toggle-thumb { position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: transform 0.3s; }
+  .toggle input:checked ~ .toggle-thumb { transform: translateX(20px); }
+  .ap-boxes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 1.2rem; }
+  .ap-box-toggle { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid rgba(201,168,76,0.2); cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+  .ap-box-toggle.active { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+  .ap-box-toggle span { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--gold); line-height: 1; }
+  .ap-box-toggle small { font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cream-dim); }
+  .ap-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width:500px){ .ap-form-row { grid-template-columns: 1fr; } }
+  .ap-save { display: block; width: 100%; background: linear-gradient(135deg, var(--caramel), var(--gold)); color: var(--cocoa-deep); border: none; padding: 1rem; font-family: 'Jost', sans-serif; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; cursor: pointer; transition: opacity 0.3s; margin-top: 1rem; }
+  .ap-save:hover { opacity: 0.85; }
+  .ap-saved { text-align: center; font-size: 0.65rem; color: #6fcf7d; letter-spacing: 0.2em; margin-top: 0.8rem; min-height: 1rem; }
+  .ap-claimed-row { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; border: 1px solid rgba(201,168,76,0.15); margin-bottom: 0.5rem; }
+  .ap-claimed-row span { font-size: 0.68rem; color: var(--cream-dim); }
+  .ap-claimed-btn { background: none; border: 1px solid var(--caramel); color: var(--caramel); padding: 0.3rem 0.8rem; font-family: 'Jost', sans-serif; font-size: 0.55rem; letter-spacing: 0.2em; cursor: pointer; transition: all 0.2s; }
+  .ap-claimed-btn.unclaim { border-color: rgba(201,168,76,0.3); color: var(--cream-mute); }
+  .ap-claimed-btn:hover { background: var(--caramel); color: var(--cocoa-deep); }
+
+  /* ── ADMIN TRIGGER (hidden corner tap) ── */
+  #admin-trigger { position: fixed; bottom: 0; right: 0; width: 60px; height: 60px; z-index: 100; cursor: pointer; background: transparent; border: none; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes rise { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scaleY(1);}50%{opacity:0.25;transform:scaleY(0.5);} }
+
+  @media(max-width:600px){ .modal-box{padding:2rem 1.2rem;} .ap-body{padding:2rem 1rem;} }
+</style>
+</head>
+<body>
+
+<!-- ════ ADMIN LOGIN ════ -->
+<div id="admin-login">
+  <div class="login-box">
+    <h2>Admin Access</h2>
+    <p>Whisked Craves drop management</p>
+    <input class="login-input" type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkPw()">
+    <div class="login-err" id="pw-err"></div>
+    <button class="btn-gold" style="width:100%" onclick="checkPw()">Enter</button>
+  </div>
+</div>
+
+<!-- ════ ADMIN PANEL ════ -->
+<div id="admin-panel">
+  <div class="ap-header">
+    <span class="ap-title">Drop Manager — Whisked Craves</span>
+    <button class="ap-close" onclick="closeAdmin()">Close Panel</button>
+  </div>
+  <div class="ap-body">
+
+    <!-- Toggle drop live -->
+    <div class="ap-section">
+      <div class="ap-section-title">Drop Status</div>
+      <div class="ap-toggle-row">
+        <span class="ap-toggle-label">Drop is currently live</span>
+        <label class="toggle">
+          <input type="checkbox" id="drop-live-toggle" onchange="toggleDrop(this.checked)">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Drop details -->
+    <div class="ap-section">
+      <div class="ap-section-title">Drop Details</div>
+
+      <div class="ap-row">
+        <label class="ap-label">Product Name</label>
+        <select class="ap-select" id="ap-product">
+          <option value="Orange Choc Cupcakes">Orange Choc Cupcakes</option>
+          <option value="Dairy Milk Choc Cupcakes">Dairy Milk Choc Cupcakes</option>
+          <option value="Kinder Choc Cupcakes">Kinder Choc Cupcakes</option>
+          <option value="Nutella Choc Cupcakes">Nutella Choc Cupcakes</option>
+          <option value="Galaxy Ripple Choc Cupcakes">Galaxy Ripple Choc Cupcakes</option>
+          <option value="Dairy Milk Brownies">Dairy Milk Brownies</option>
+          <option value="Orange Choc Brownies">Orange Choc Brownies</option>
+        </select>
+      </div>
+
+      <div class="ap-row">
+        <label class="ap-label">Box Sizes Available This Drop</label>
+        <div class="ap-boxes">
+          <div class="ap-box-toggle" id="box-4" onclick="toggleBox(4)">
+            <span>4</span><small>Box of 4</small>
+          </div>
+          <div class="ap-box-toggle" id="box-6" onclick="toggleBox(6)">
+            <span>6</span><small>Box of 6</small>
+          </div>
+          <div class="ap-box-toggle" id="box-12" onclick="toggleBox(12)">
+            <span>12</span><small>Box of 12</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="ap-row">
+        <label class="ap-label">Google Form Link (claim form)</label>
+        <input class="ap-input" type="url" id="ap-form-link" placeholder="https://forms.google.com/...">
+      </div>
+
+      <div class="ap-row">
+        <label class="ap-label">Number of Boxes Available</label>
+        <input class="ap-input" type="number" id="ap-qty" min="1" max="20" placeholder="e.g. 2">
+      </div>
+    </div>
+
+    <!-- Mark boxes claimed -->
+    <div class="ap-section">
+      <div class="ap-section-title">Mark Boxes as Claimed</div>
+      <div id="claimed-list"></div>
+    </div>
+
+    <button class="ap-save" onclick="saveAdmin()">Save &amp; Update Page</button>
+    <div class="ap-saved" id="ap-saved-msg"></div>
+
+  </div>
+</div>
+
+<!-- ════ CLAIM MODAL ════ -->
+<div class="modal-bg" id="modal">
+  <div class="modal-box">
+    <button class="modal-x" onclick="closeModal()">✕</button>
+    <p class="m-eye">Claiming Your Box</p>
+    <h2 class="m-title" id="m-title">Box of 12</h2>
+    <p class="m-prod" id="m-prod">Chocolate Cupcakes</p>
+    <div class="m-rule"></div>
+    <div class="m-steps">
+      <div class="m-step"><div class="m-sn">1</div><div class="m-st"><strong>Fill in the claim form</strong> — your name, email and phone number only.</div></div>
+      <div class="m-step"><div class="m-sn">2</div><div class="m-st"><strong>We will contact you within 24 hours</strong> to confirm your claim and send bank transfer details for your deposit.</div></div>
+      <div class="m-step"><div class="m-sn">3</div><div class="m-st"><strong>Send your deposit</strong> within the time stated in our message. <em>Your box is only confirmed once the deposit is received.</em></div></div>
+      <div class="m-step"><div class="m-sn">4</div><div class="m-st"><strong>Collection details</strong> confirmed once your deposit is in. Balance paid on collection.</div></div>
+    </div>
+    <div class="m-dep">
+      <strong>Deposit Policy —</strong> A non-refundable deposit is required to secure your box. If you do not collect, the deposit is not returned. This protects the time and ingredients that go into every order.
+    </div>
+    <a class="m-cta" id="m-form-btn" href="#" target="_blank" rel="noopener">Open Claim Form →</a>
+    <p class="m-note">Submitting the form does not confirm your box.<br>Confirmation only once your deposit has been received.</p>
+  </div>
+</div>
+
+<!-- ════ HERO ════ -->
+<section class="hero">
+  <p class="h-eye">Small batch · Handmade · Drop model</p>
+  <div class="h-wm">
+    <div class="wordmark">
+      <div class="wm-whisked">Whisked</div>
+      <div class="wm-rule"></div>
+      <div class="wm-craves">Craves</div>
+      <div class="wm-rule"></div>
+      <div class="wm-tag">Taste That Matters</div>
+    </div>
+  </div>
+  <p class="h-desc">Brownies <span>◆</span> Cupcakes <span>◆</span> Handmade to Order</p>
+  <div class="h-ctas">
+    <a class="btn-gold" href="#drop-section">See Current Drop</a>
+    <a class="btn-ghost" href="#how-it-works">How it works ↓</a>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ════ DROP SECTION ════ -->
+<section class="drop-section" id="drop-section">
+  <div class="drop-inner">
+
+    <!-- No drop state -->
+    <div id="no-drop">
+      <div class="nd-inner">
+        <p class="eyebrow">Current Drop</p>
+        <h2 class="sec-title" style="margin-bottom:1.5rem;">No Drop <em>Live Yet</em></h2>
+        <p class="nd-text">We don't have an active drop right now. Follow us on Instagram to be the first to know when the next drop goes live.</p>
+        <a class="ig-btn" href="https://instagram.com/whiskedcraves" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          Follow on Instagram
+        </a>
+      </div>
+    </div>
+
+    <!-- Active drop (rendered by JS) -->
+    <div id="active-drop"></div>
+
+  </div>
+</section>
+
+<!-- ════ HOW IT WORKS ════ -->
+<section class="how-section" id="how-it-works">
+  <p class="eyebrow">The Process</p>
+  <h2 class="sec-title">How <em>Drops Work</em></h2>
+  <div class="how-grid">
+    <div class="how-item"><div class="how-num">01</div><div class="how-title">Follow Us</div><div class="how-desc">Drops are announced on Instagram. Follow us so you don't miss when a drop goes live.</div></div>
+    <div class="how-item"><div class="how-num">02</div><div class="how-title">Claim Your Box</div><div class="how-desc">When a drop is live, click Claim and fill in the short form. We contact you within 24 hours.</div></div>
+    <div class="how-item"><div class="how-num">03</div><div class="how-title">Pay Your Deposit</div><div class="how-desc">A non-refundable deposit is required via bank transfer to confirm your box. Details sent by us directly.</div></div>
+    <div class="how-item"><div class="how-num">04</div><div class="how-title">Collect</div><div class="how-desc">Collection details confirmed once your deposit is received. Balance paid on collection.</div></div>
+  </div>
+</section>
+
+<!-- ════ DEPOSIT ════ -->
+<section class="deposit-section">
+  <div class="dep-inner">
+    <p class="eyebrow">Deposit Policy</p>
+    <h2 class="sec-title" style="margin-bottom:1.5rem;">Our <em>Terms</em></h2>
+    <p class="dep-body">Every order requires a non-refundable deposit. This is not about distrust — it is about respect for the time, ingredients and care that go into every single box. Please only claim if you are genuinely intending to collect.</p>
+    <div class="dep-cards">
+      <div class="dep-card"><div class="dep-card-title">Drop Boxes (4, 6 &amp; 12)</div><div class="dep-card-text">Deposit required within the timeframe stated in our confirmation message. Your box is not held until the deposit is received. No refunds on deposit.</div></div>
+      <div class="dep-card"><div class="dep-card-title">Large Orders (32+)</div><div class="dep-card-text">50% non-refundable deposit required to book your date. Balance paid on collection. Minimum 7–10 days lead time required.</div></div>
+    </div>
+    <div class="dep-notice"><strong>Non-collection —</strong> If you fail to collect after paying a deposit, the deposit is not returned. If circumstances change, please contact us as early as possible.</div>
+  </div>
+</section>
+
+<!-- ════ ALLERGENS ════ -->
+<section class="allergy-section">
+  <p class="eyebrow">Allergen Information</p>
+  <h2 class="sec-title">Know What's <em>Inside</em></h2>
+  <div class="g-rule"></div>
+  <p style="font-size:0.75rem;line-height:1.9;color:var(--cream-dim);max-width:600px;">All products are handmade in a home kitchen. Allergens are listed per product below. Anyone with a food allergy or intolerance should not consume our products — please contact us before ordering if you have any concerns.</p>
+
+  <div class="allergy-grid">
+
+    <div class="allergy-card">
+      <div class="ac-name">Orange Choc Cupcakes</div>
+      <div class="ac-pills">
+        <span class="ac-pill">Gluten</span>
+        <span class="ac-pill">Eggs</span>
+        <span class="ac-pill">Milk</span>
+        <span class="ac-pill">Mustard</span>
+        <span class="ac-pill">Soya</span>
+        <span class="ac-pill trace">May contain Tree Nuts</span>
+      </div>
+    </div>
+
+    <div class="allergy-card">
+      <div class="ac-name">Dairy Milk Choc Cupcakes</div>
+      <div class="ac-pills">
+        <span class="ac-pill">Gluten</span>
+        <span class="ac-pill">Eggs</span>
+        <span class="ac-pill">Milk</span>
+        <span class="ac-pill">Mustard</span>
+        <span class="ac-pill">Soya</span>
+      </div>
+    </div>
+
+    <div class="allergy-card">
+      <div class="ac-name">Kinder Choc Cupcakes</div>
+      <div class="ac-pills">
+        <span class="ac-pill">Gluten</span>
+        <span class="ac-pill">Eggs</span>
+        <span class="ac-pill">Milk</span>
+        <span class="ac-pill">Mustard</span>
+        <span class="ac-pill">Soya</span>
+        <span class="ac-pill">Tree Nuts</span>
+      </div>
+    </div>
+
+    <div class="allergy-card">
+      <div class="ac-name">Nutella Choc Cupcakes</div>
+      <div class="ac-pills">
+        <span class="ac-pill">Gluten</span>
+        <span class="ac-pill">Eggs</span>
+        <span class="ac-pill">Milk</span>
+        <span class="ac-pill">Mustard</span>
+        <span class="ac-pill">Soya</span>
+        <span class="ac-pill">Tree Nuts</span>
+      </div>
+    </div>
+
+    <div class="allergy-card">
+      <div class="ac-name">Galaxy Ripple Choc Cupcakes</div>
+      <div class="ac-pills">
+        <span class="ac-pill">Gluten</span>
+        <span class="ac-pill">Eggs</span>
+        <span class="ac-pill">Milk</span>
+        <span class="ac-pill">Mustard</span>
+        <span class="ac-pill">Soya</span>
+      </div>
+    </div>
+
+    <div class="allergy-card">
+      <div class="ac-name">Dairy Milk Brownies</div>
+      <div class="ac-pills">
+        <span class="ac-pill">Gluten</span>
+        <span class="ac-pill">Eggs</span>
+        <span class="ac-pill">Milk</span>
+        <span class="ac-pill">Mustard</span>
+        <span class="ac-pill">Soya</span>
+      </div>
+    </div>
+
+    <div class="allergy-card">
+      <div class="ac-name">Orange Choc Brownies</div>
+      <div class="ac-pills">
+        <span class="ac-pill">Gluten</span>
+        <span class="ac-pill">Eggs</span>
+        <span class="ac-pill">Milk</span>
+        <span class="ac-pill">Mustard</span>
+        <span class="ac-pill">Soya</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="allergy-warning">
+    <strong>Important —</strong> Our products are not suitable for anyone with a food allergy or intolerance to the allergens listed above. All products are made in a home kitchen that handles these allergens. We cannot guarantee the absence of traces. If you have any concerns, please contact us <strong>before ordering.</strong>
+  </div>
+</section>
+
+<!-- ════ PRE-ORDER ════ -->
+<section class="preorder-section">
+  <div class="po-inner">
+    <p class="eyebrow">Large Orders</p>
+    <h2 class="sec-title">Need <em>32 or More?</em></h2>
+    <div class="g-rule c"></div>
+    <p style="font-size:0.75rem;line-height:1.9;color:var(--cream-dim);">Events, occasions, corporate gifting. Large orders are pre-order only — planned in advance so every box receives the same care as the first.</p>
+    <div class="po-terms">
+      <div class="po-block"><div class="po-num">01</div><div class="po-title">Enquire First</div><div class="po-desc">Message us with your date, quantity and product. We confirm availability.</div></div>
+      <div class="po-block"><div class="po-num">02</div><div class="po-title">50% Deposit</div><div class="po-desc">Non-refundable deposit secures your date. Balance due on collection.</div></div>
+      <div class="po-block"><div class="po-num">03</div><div class="po-title">7–10 Days Lead</div><div class="po-desc">Minimum lead time required. Last-minute requests cannot be guaranteed.</div></div>
+      <div class="po-block"><div class="po-num">04</div><div class="po-title">Fixed Menu</div><div class="po-desc">Bespoke requests are quoted separately and may incur an additional cost.</div></div>
+    </div>
+    <a class="po-cta" href="YOUR_PREORDER_FORM_LINK_HERE" target="_blank" rel="noopener">Enquire About a Large Order</a>
+  </div>
+</section>
+
+<!-- ════ FOOTER ════ -->
+<footer>
+  <div class="wordmark" style="display:inline-flex;flex-direction:column;align-items:center;gap:0.1rem;">
+    <div class="wm-whisked" style="font-size:2rem;">Whisked</div>
+    <div class="wm-rule" style="width:120px;"></div>
+    <div class="wm-craves" style="font-size:0.75rem;">Craves</div>
+  </div>
+  <p class="ft-tag">Taste That Matters</p>
+  <p class="ft-legal">All products handmade in a home kitchen · Allergens listed per product above<br>Deposits are non-refundable · Drops are first come, first served · The price is the price</p>
+</footer>
+
+<!-- Hidden admin trigger — tap bottom-right corner 5 times -->
+<button id="admin-trigger" onclick="adminTap()" aria-hidden="true" tabindex="-1"></button>
+
+<script>
+  // ══════════════════════════════════════
+  // ALLERGEN DATA PER PRODUCT
+  // ══════════════════════════════════════
+  const ALLERGENS = {
+    'Orange Choc Cupcakes':         ['Gluten','Eggs','Milk','Mustard','Soya','May contain Tree Nuts'],
+    'Dairy Milk Choc Cupcakes':     ['Gluten','Eggs','Milk','Mustard','Soya'],
+    'Kinder Choc Cupcakes':         ['Gluten','Eggs','Milk','Mustard','Soya','Tree Nuts'],
+    'Nutella Choc Cupcakes':        ['Gluten','Eggs','Milk','Mustard','Soya','Tree Nuts'],
+    'Galaxy Ripple Choc Cupcakes':  ['Gluten','Eggs','Milk','Mustard','Soya'],
+    'Dairy Milk Brownies':          ['Gluten','Eggs','Milk','Mustard','Soya'],
+    'Orange Choc Brownies':         ['Gluten','Eggs','Milk','Mustard','Soya'],
+  };
+
+  // ══════════════════════════════════════
+  // ADMIN PASSWORD — CHANGE THIS
+  // ══════════════════════════════════════
+  const ADMIN_PASSWORD = 'whisked2024';
+
+  // ══════════════════════════════════════
+  // STATE
+  // ══════════════════════════════════════
+  let state = {
+    dropLive: false,
+    product: 'Orange Choc Cupcakes',
+    sizes: [],
+    formLink: '',
+    qty: 1,
+    claimed: []   // array of box indices that are claimed e.g. [0, 2]
+  };
+
+  // Load from localStorage if available
+  try {
+    const saved = localStorage.getItem('wc_drop_state');
+    if (saved) state = JSON.parse(saved);
+  } catch(e){}
+
+  function saveState() {
+    try { localStorage.setItem('wc_drop_state', JSON.stringify(state)); } catch(e){}
+  }
+
+  // ══════════════════════════════════════
+  // RENDER DROP SECTION
+  // ══════════════════════════════════════
+  function renderDrop() {
+    const noDrop = document.getElementById('no-drop');
+    const activeDrop = document.getElementById('active-drop');
+
+    if (!state.dropLive || state.sizes.length === 0) {
+      noDrop.style.display = 'block';
+      activeDrop.style.display = 'none';
+      return;
+    }
+
+    noDrop.style.display = 'none';
+    activeDrop.style.display = 'block';
+
+    const allergens = ALLERGENS[state.product] || [];
+    const allergenStr = allergens.join(' · ');
+
+    let cards = '';
+    for (let i = 0; i < state.qty; i++) {
+      const isClaimed = state.claimed.includes(i);
+      // Decide size label — rotate through selected sizes
+      const sizeLabel = state.sizes[i % state.sizes.length];
+      cards += `
+        <div class="drop-card ${isClaimed ? 'claimed' : ''}" id="dc-${i}">
+          <div class="dc-size">${sizeLabel}</div>
+          <div class="dc-label">Box ${i + 1}</div>
+          <div class="dc-product">${state.product}</div>
+          <div class="dc-allergens">Contains: ${allergenStr}</div>
+          <button class="claim-btn" onclick="openModal('Box of ${sizeLabel} — Box ${i + 1}','${state.product}')">Claim This Box</button>
+        </div>`;
+    }
+
+    activeDrop.innerHTML = `
+      <div class="drop-head">
+        <div>
+          <p class="eyebrow">Current Drop</p>
+          <h2 class="sec-title">What's <em>Available</em></h2>
+        </div>
+      </div>
+      <div class="drop-grid">${cards}</div>`;
+  }
+
+  // ══════════════════════════════════════
+  // MODAL
+  // ══════════════════════════════════════
+  function openModal(title, product) {
+    document.getElementById('m-title').textContent = title;
+    document.getElementById('m-prod').textContent = product;
+    const btn = document.getElementById('m-form-btn');
+    if (state.formLink && state.formLink.startsWith('http')) {
+      btn.href = state.formLink;
+      btn.textContent = 'Open Claim Form →';
+      btn.onclick = null;
+    } else {
+      btn.href = '#';
+      btn.textContent = 'Form link not yet set';
+      btn.onclick = e => e.preventDefault();
+    }
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeAdmin(); } });
+
+  // ══════════════════════════════════════
+  // ADMIN — TAP TRIGGER (5 taps bottom-right)
+  // ══════════════════════════════════════
+  let tapCount = 0, tapTimer;
+  function adminTap() {
+    tapCount++;
+    clearTimeout(tapTimer);
+    if (tapCount >= 5) { tapCount = 0; showAdminLogin(); }
+    else { tapTimer = setTimeout(() => tapCount = 0, 2000); }
+  }
+
+  function showAdminLogin() {
+    document.getElementById('admin-login').classList.add('show');
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-err').textContent = '';
+    setTimeout(() => document.getElementById('pw-input').focus(), 100);
+  }
+
+  function checkPw() {
+    const val = document.getElementById('pw-input').value;
+    if (val === ADMIN_PASSWORD) {
+      document.getElementById('admin-login').classList.remove('show');
+      openAdminPanel();
+    } else {
+      document.getElementById('pw-err').textContent = 'Incorrect password.';
+      document.getElementById('pw-input').value = '';
+    }
+  }
+
+  function openAdminPanel() {
+    // Sync inputs with current state
+    document.getElementById('drop-live-toggle').checked = state.dropLive;
+    document.getElementById('ap-product').value = state.product;
+    document.getElementById('ap-form-link').value = state.formLink;
+    document.getElementById('ap-qty').value = state.qty;
+
+    // Box toggles
+    [4, 6, 12].forEach(s => {
+      const el = document.getElementById(`box-${s}`);
+      el.classList.toggle('active', state.sizes.includes(s));
+    });
+
+    // Claimed list
+    renderClaimedList();
+
+    document.getElementById('admin-panel').classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeAdmin() {
+    document.getElementById('admin-panel').classList.remove('show');
+    document.getElementById('admin-login').classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  function toggleDrop(val) {
+    state.dropLive = val;
+  }
+
+  function toggleBox(size) {
+    const idx = state.sizes.indexOf(size);
+    if (idx > -1) state.sizes.splice(idx, 1);
+    else state.sizes.push(size);
+    state.sizes.sort((a, b) => a - b);
+    const el = document.getElementById(`box-${size}`);
+    el.classList.toggle('active', state.sizes.includes(size));
+    renderClaimedList();
+  }
+
+  function renderClaimedList() {
+    const qty = parseInt(document.getElementById('ap-qty').value) || state.qty;
+    const list = document.getElementById('claimed-list');
+    if (qty < 1) { list.innerHTML = '<p style="font-size:0.68rem;color:var(--cream-mute);">Set quantity above first.</p>'; return; }
+    let html = '';
+    for (let i = 0; i < qty; i++) {
+      const isClaimed = state.claimed.includes(i);
+      html += `<div class="ap-claimed-row">
+        <span>Box ${i + 1}</span>
+        <button class="ap-claimed-btn ${isClaimed ? '' : 'unclaim'}" onclick="toggleClaimed(${i})">
+          ${isClaimed ? 'Marked Claimed' : 'Mark as Claimed'}
+        </button>
+      </div>`;
+    }
+    list.innerHTML = html;
+  }
+
+  function toggleClaimed(idx) {
+    const pos = state.claimed.indexOf(idx);
+    if (pos > -1) state.claimed.splice(pos, 1);
+    else state.claimed.push(idx);
+    renderClaimedList();
+  }
+
+  document.getElementById('ap-qty').addEventListener('input', renderClaimedList);
+
+  function saveAdmin() {
+    state.dropLive = document.getElementById('drop-live-toggle').checked;
+    state.product = document.getElementById('ap-product').value;
+    state.formLink = document.getElementById('ap-form-link').value.trim();
+    state.qty = parseInt(document.getElementById('ap-qty').value) || 1;
+    // sizes already updated by toggleBox
+    saveState();
+    renderDrop();
+    document.getElementById('ap-saved-msg').textContent = '✓ Page updated successfully';
+    setTimeout(() => document.getElementById('ap-saved-msg').textContent = '', 3000);
+  }
+
+  // ══════════════════════════════════════
+  // INIT
+  // ══════════════════════════════════════
+  renderDrop();
+</script>
+</body>
+</html>
+
